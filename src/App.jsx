@@ -2,6 +2,8 @@ import "./App.css";
 import { useEffect, useState } from "react";
 
 import NodeList from "./components/NodeList";
+import Prefill from "./components/Prefill";
+import { BrowserRouter, Route, Router, Routes } from "react-router";
 
 function App() {
   const [graph, setGraph] = useState({});
@@ -23,7 +25,16 @@ function App() {
     });
   }, []);
 
-  return (<NodeList graph={graph} />);
+  return (
+     <BrowserRouter>
+      <div>
+        <Routes>
+          <Route index element={<NodeList graph={graph} />} />
+          <Route path="/prefill" element={<Prefill />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
 }
 
 export default App;
