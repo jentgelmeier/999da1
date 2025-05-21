@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import NodeList from "./components/NodeList";
 import Prefill from "./components/Prefill";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { NodeProvider } from "./context/nodeContext";
+import { ContextProvider } from "./context/ContextProvider";
 
 function App() {
   const [graph, setGraph] = useState({});
@@ -22,21 +22,20 @@ function App() {
   useEffect(() => {
     fetchGraph().then((data) => {
       setGraph(data);
-      console.log(data);
     });
   }, []);
 
   return (
-    <NodeProvider>
+    <ContextProvider graph={graph} setGraph={setGraph}>
       <BrowserRouter>
         <div>
           <Routes>
             <Route index element={<NodeList graph={graph} />} />
-            <Route path="/prefill" element={<Prefill graph={graph} />} />
+            <Route path="/prefill" element={<Prefill />} />
           </Routes>
         </div>
       </BrowserRouter>
-    </NodeProvider>
+    </ContextProvider>
   );
 }
 

@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router";
-import { NodeContext } from "../context/nodeContext";
+import { NodeContext } from "../context/ContextProvider";
 
-function NodeList({ graph }) {
+function NodeList({ graph = {} }) {
   const navigate = useNavigate();
   const { setId, setComponentId, setName } = useContext(NodeContext);
 
@@ -22,7 +22,7 @@ function NodeList({ graph }) {
     setName(e.target.innerText);
     setId(e.target.value);
     setComponentId(e.target.getAttribute("data-componentid"));
-    navigate("/prefill")
+    navigate("/prefill");
   }
 
   return (
@@ -31,7 +31,14 @@ function NodeList({ graph }) {
         return (
           <div key={node.id} className="card my-1">
             <div className="card-body">
-              <button className="btn btn-link" value={node.id} data-componentid={node.data.component_id} onClick={handleClick}>{node.data.name}</button>
+              <button
+                className="btn btn-link"
+                value={node.id}
+                data-componentid={node.data.component_id}
+                onClick={handleClick}
+              >
+                {node.data.name}
+              </button>
             </div>
           </div>
         );

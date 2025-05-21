@@ -1,14 +1,15 @@
 import { useContext } from "react";
-import { NodeContext } from "../context/nodeContext";
+import { GraphContext, NodeContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router";
 
 // font awesome icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 
-function Prefill({ graph = {} }) {
+function Prefill() {
   const navigate = useNavigate();
   const { id, componentId, name } = useContext(NodeContext);
+  const { graph } = useContext(GraphContext);
 
   if (!id) {
     navigate("/");
@@ -32,10 +33,11 @@ function Prefill({ graph = {} }) {
             <input
               type="text"
               className="form-control"
-              style={{ paddingLeft: "30px", backgroundColor: "rgb(233, 236, 239)" }}
-              // style={{ paddingLeft: "30px" }}
+              style={{
+                paddingLeft: "30px",
+                backgroundColor: "rgb(233, 236, 239)",
+              }}
               value={field}
-              // disabled
             />
           </>
         ))}
