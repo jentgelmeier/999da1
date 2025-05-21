@@ -1,12 +1,20 @@
+import { useContext } from "react";
+import { NodeContext } from "../context/nodeContext";
+import { useNavigate } from "react-router";
 
+function Prefill({ graph = {} }) {
+  const navigate = useNavigate();
+  const { id, componentId, name } = useContext(NodeContext);
 
-function Prefill() {
+  if (!id) {
+    navigate("/");
+    return;
+  }
 
-  return (
-    <div className="container">
-      hello world
-    </div>
-  );
+  const form = graph?.forms.filter((f) => f.id === componentId)[0];
+  console.log(form);
+
+  return <div className="container">{name}</div>;
 }
 
 export default Prefill;

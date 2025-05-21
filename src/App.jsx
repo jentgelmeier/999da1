@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import NodeList from "./components/NodeList";
 import Prefill from "./components/Prefill";
-import { BrowserRouter, Route, Router, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
+import { NodeProvider } from "./context/nodeContext";
 
 function App() {
   const [graph, setGraph] = useState({});
@@ -26,14 +27,16 @@ function App() {
   }, []);
 
   return (
-     <BrowserRouter>
-      <div>
-        <Routes>
-          <Route index element={<NodeList graph={graph} />} />
-          <Route path="/prefill" element={<Prefill />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <NodeProvider>
+      <BrowserRouter>
+        <div>
+          <Routes>
+            <Route index element={<NodeList graph={graph} />} />
+            <Route path="/prefill" element={<Prefill graph={graph} />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </NodeProvider>
   );
 }
 
