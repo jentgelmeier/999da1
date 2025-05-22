@@ -1,13 +1,15 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GraphContext, NodeContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router";
 
 // font awesome icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
+import PrefillSidebar from "./PrefillSidebar";
 
 function Prefill() {
   const navigate = useNavigate();
+  const [show, setShow] = useState("show");
   const { id, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
 
@@ -20,6 +22,7 @@ function Prefill() {
   const fields = Object.keys(form.field_schema.properties);
 
   return (
+    <>
     <div className="container">
       <h5>Prefill</h5>
       <p>Prefill fields for {name}.</p>
@@ -43,6 +46,9 @@ function Prefill() {
         ))}
       </div>
     </div>
+    
+    <PrefillSidebar show={show} setShow={setShow} />
+    </>
   );
 }
 
