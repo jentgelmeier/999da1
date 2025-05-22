@@ -30,6 +30,24 @@ function Prefill() {
     target.select();
     setFieldName(`${name}.${target.value}`);
   }
+
+  function getParentNodes(formId) {
+    // use the spread operator here to create a copy; otherwise, I'd modify the graph...data.prerequisites object directly
+    let currentParents = [...graph.nodes.filter(f => f.id === formId)[0].data.prerequisites];
+    let allParents = [];
+
+    while (currentParents.length) {
+      let currentId = currentParents.shift();
+      if (!allParents.includes(currentId)) {
+        allParents.push(currentId);
+      }
+      let nextParents = graph.nodes.filter(f => f.id === currentId)[0].data.prerequisites;
+      currentParents = currentParents.concat(nextParents);
+    }
+
+    return allParents;
+  }
+
   return (
     <>
       <div className="container">
