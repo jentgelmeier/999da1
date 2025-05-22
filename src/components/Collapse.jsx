@@ -9,7 +9,7 @@ function Collapse({ source = {}, elements = [] }) {
   return (
     <li>
       <button
-        class="btn"
+        className="btn"
         type="button"
         data-bs-toggle="collapse"
         data-bs-target={"#collapse-" + id}
@@ -19,11 +19,11 @@ function Collapse({ source = {}, elements = [] }) {
       >
         <FontAwesomeIcon icon={down ? faAngleDown : faAngleRight} /> {title}
       </button>
-      <div class="collapse" id={"collapse-" + id}>
+      <div className="collapse" id={"collapse-" + id}>
         <ul style={{ listStyleType: "none" }}>
           {elements.map((el) => (
-            <li>
-              <button class="btn">{el}</button>
+            <li key={el}>
+              <button className="btn">{el}</button>
             </li>
           ))}
         </ul>

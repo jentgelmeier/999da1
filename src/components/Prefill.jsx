@@ -1,4 +1,5 @@
-import { useContext, useState } from "react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useContext, useEffect, useState } from "react";
 import { GraphContext, NodeContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router";
 
@@ -10,19 +11,35 @@ import { faDatabase, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 function Prefill() {
   const navigate = useNavigate();
+
   const [fieldName, setFieldName] = useState("");
+  const [fields, setFields] = useState([]);
+  const [parentNodes, setParentNodes] = useState([]);
+  const [muted, setMuted] = useState("");
   const [filled, setFilled] = useState(true);
+
   const { id, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
 
-  if (!id) {
-    navigate("/");
+
+
+  useEffect(() => {
+    if (!id) {
+      navigate("/");
     return;
   }
+    // retrieve fields to display
+    const form = graph?.forms.filter((f) => f.id === componentId)[0];
+    setFields(Object.keys(form.field_schema.properties));
 
-  const form = graph?.forms.filter((f) => f.id === componentId)[0];
-  const fields = Object.keys(form.field_schema.properties);
-  const muted = filled ? "" : " text-muted";
+    // get parent nodes for sidebar
+    setParentNodes(getParentNodes(id));
+  }, []);
+
+  useEffect(() => {
+    // variable to set text input class for text color
+    setMuted(filled ? "" : " text-muted");
+  }, [filled]);
 
   function handleClick(event) {
     const { target } = event;
@@ -33,7 +50,9 @@ function Prefill() {
 
   function getParentNodes(formId) {
     // use the spread operator here to create a copy; otherwise, I'd modify the graph...data.prerequisites object directly
-    let currentParents = [...graph.nodes.filter(f => f.id === formId)[0].data.prerequisites];
+    let currentParents = [
+      ...graph.nodes.filter((f) => f.id === formId)[0].data.prerequisites,
+    ];
     let allParents = [];
 
     while (currentParents.length) {
@@ -41,7 +60,8 @@ function Prefill() {
       if (!allParents.includes(currentId)) {
         allParents.push(currentId);
       }
-      let nextParents = graph.nodes.filter(f => f.id === currentId)[0].data.prerequisites;
+      let nextParents = graph.nodes.filter((f) => f.id === currentId)[0].data
+        .prerequisites;
       currentParents = currentParents.concat(nextParents);
     }
 
@@ -55,7 +75,7 @@ function Prefill() {
         <p>Prefill fields for {name}.</p>
         <div>
           {fields.map((field) => (
-            <div className="input-group position-relative mb-2 mt-3">
+            <div key={field} className="input-group position-relative mb-2 mt-3">
               {filled ? (
                 ""
               ) : (
@@ -109,7 +129,11 @@ function Prefill() {
         </div>
       </div>
 
-      <PrefillSidebar fieldName={fieldName} setFieldName={setFieldName} />
+      <PrefillSidebar
+        fieldName={fieldName}
+        setFieldName={setFieldName}
+        parentNodes={parentNodes}
+      />
     </>
   );
 }
