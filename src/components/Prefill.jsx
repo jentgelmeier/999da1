@@ -2,14 +2,15 @@ import { useContext, useState } from "react";
 import { GraphContext, NodeContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router";
 
+import PrefillSidebar from "./PrefillSidebar";
+
 // font awesome icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import PrefillSidebar from "./PrefillSidebar";
 
 function Prefill() {
   const navigate = useNavigate();
-  const [show, setShow] = useState("show");
+  const [fieldName, setFieldName] = useState("");
   const [filled, setFilled] = useState(true);
   const { id, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
@@ -27,7 +28,7 @@ function Prefill() {
     const { target } = event;
 
     target.select();
-    setShow("show");
+    setFieldName(`${name}.${target.value}`);
   }
   return (
     <>
@@ -57,9 +58,10 @@ function Prefill() {
                 style={{
                   paddingLeft: filled ? ".75rem" : "30px",
                   backgroundColor: "rgb(233, 236, 239)",
-                  borderRadius: filled ? "15px 6px 6px 15px" : "6px",
+                  borderRadius: filled ? "15px 0px 0px 15px" : "6px",
                 }}
                 value={field}
+                disabled={filled || fieldName}
               />
               {filled ? (
                 <button
@@ -89,7 +91,7 @@ function Prefill() {
         </div>
       </div>
 
-      <PrefillSidebar show={show} setShow={setShow} />
+      <PrefillSidebar fieldName={fieldName} setFieldName={setFieldName} />
     </>
   );
 }
