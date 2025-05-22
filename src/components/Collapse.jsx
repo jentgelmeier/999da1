@@ -2,8 +2,8 @@ import { faAngleDown, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-function Collapse({ source = {}, elements = [] }) {
-  const { id, title } = source;
+function Collapse({ source = {} }) {
+  const { elements, id, title } = source;
   const [down, setDown] = useState(false);
 
   return (
