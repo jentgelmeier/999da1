@@ -64,3 +64,9 @@ export type PrefillContextType = {
   prefill?: PrefillType;
   setPrefill: Function;
 };
+
+export interface DataSource {
+  title: string;
+  id: string;
+  elements: string[];
+}

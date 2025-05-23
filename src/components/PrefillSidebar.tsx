@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Collapse from "./Collapse";
 import { GraphContext } from "../context/ContextProvider";
-import { SetString } from "../types";
+import { DataSource, SetString } from "../types";
 
 function PrefillSidebar({
   fieldName = "",
@@ -16,12 +16,12 @@ function PrefillSidebar({
 
   const { graph } = useContext(GraphContext);
 
-  const [search, setSearch] = useState("");
-  const [show, setShow] = useState();
+  const [search, setSearch] = useState<string>("");
+  const [show, setShow] = useState<string>("");
   // there are 2 data sources states: one to display, which gets filtered by the search input,
   // and one that stays unchanged that can be used to reshow all data sources when the search input is cleared
-  const [displayedDataSources, setDisplayedDataSources] = useState([]);
-  const [fullDataSources, setFullDataSources] = useState([
+  const [displayedDataSources, setDisplayedDataSources] = useState<DataSource[]>([]);
+  const [fullDataSources, setFullDataSources] = useState<DataSource[]>([
     { title: "Action Properties", id: "actionProps", elements: globalElements },
     {
       title: "Client Organization Properties",
@@ -34,11 +34,11 @@ function PrefillSidebar({
     const parentSources = [];
     // loop through parentNodes and format data to add to data sources
     for (let id of parentNodes) {
-      let node = graph.nodes.filter((f) => f.id === id)[0];
-      const { name, component_id } = node.data;
+      let node = graph?.nodes?.filter((f) => f.id === id)[0];
+      const { name, component_id } = node?.data;
 
-      const form = graph.forms.filter((f) => f.id === component_id)[0];
-      const elements = Object.keys(form.field_schema.properties);
+      const form = graph?.forms?.filter((f) => f.id === component_id)[0];
+      const elements = Object.keys(form?.field_schema.properties);
 
       const source = { title: name, id, elements };
       parentSources.push(source);
@@ -58,7 +58,7 @@ function PrefillSidebar({
     setShow(fieldName ? "show" : "");
   }, [fieldName]);
 
-  function sortSources(a, b) {
+  function sortSources(a: DataSource, b: DataSource) {
     if (a.title < b.title) {
       return -1;
     }
@@ -68,20 +68,20 @@ function PrefillSidebar({
     return 0;
   }
 
-  function handleSearchChange(event) {
-    const { value } = event.target;
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target as HTMLInputElement;
     setSearch(value);
 
     if (value) {
       // expand collapses
-      const collapses = document.getElementsByClassName("collapse");
+      const collapses = Array.from(document.getElementsByClassName("collapse"));
       for (let collapse of collapses) {
         collapse.classList.add("show");
       }
       // filter datasources
       const displayedCopy = [...displayedDataSources];
       for (let source of displayedCopy) {
-        source.elements = source.elements.filter((el) =>
+        source.elements = source.elements.filter((el: string) =>
           el.includes(value.toLowerCase().trim())
         );
       }
@@ -95,7 +95,7 @@ function PrefillSidebar({
   return (
     <div
       className={show + " offcanvas offcanvas-start"}
-      tabIndex="-1"
+      tabIndex={-1}
       id="offcanvasNavbar"
       aria-labelledby="offcanvasNavbarLabel"
     >
@@ -123,7 +123,7 @@ function PrefillSidebar({
           />
         </form>
         <ul className="navbar-nav mt-3 data-elements">
-          {displayedDataSources.map((source) => (
+          {displayedDataSources.map((source: DataSource) => (
             <Collapse
               key={source.id}
               source={source}
