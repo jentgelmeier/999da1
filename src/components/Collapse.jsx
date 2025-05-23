@@ -1,10 +1,24 @@
 import { faAngleDown, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { NodeContext, PrefillContext } from "../context/ContextProvider";
 
-function Collapse({ source = {} }) {
+function Collapse({ source = {}, fieldName, setFieldName }) {
   const { elements, id, title } = source;
   const [down, setDown] = useState(false);
+
+  const { prefill, setPrefill } = useContext(PrefillContext);
+  const { nodeId } = useContext(NodeContext);
+
+  function handleClick(event) {
+    const { innerText } = event.target;
+    const field = fieldName.split(".")[1];
+
+    const prefillCopy = { ...prefill };
+    prefillCopy[nodeId][field] = title + "." + innerText;
+    setPrefill(prefillCopy);
+    setFieldName("");
+  }
 
   return (
     <li>
@@ -23,7 +37,9 @@ function Collapse({ source = {} }) {
         <ul style={{ listStyleType: "none" }}>
           {elements.map((el) => (
             <li key={el}>
-              <button className="btn">{el}</button>
+              <button className="btn" onClick={handleClick}>
+                {el}
+              </button>
             </li>
           ))}
         </ul>

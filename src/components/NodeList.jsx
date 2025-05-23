@@ -4,7 +4,7 @@ import { NodeContext } from "../context/ContextProvider";
 
 function NodeList({ graph = {} }) {
   const navigate = useNavigate();
-  const { setId, setComponentId, setName } = useContext(NodeContext);
+  const { setNodeId, setComponentId, setName } = useContext(NodeContext);
 
   const { nodes = [] } = graph;
 
@@ -20,7 +20,7 @@ function NodeList({ graph = {} }) {
 
   function handleClick(e) {
     setName(e.target.innerText);
-    setId(e.target.value);
+    setNodeId(e.target.value);
     setComponentId(e.target.getAttribute("data-componentid"));
     navigate("/prefill");
   }

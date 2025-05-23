@@ -75,7 +75,7 @@ function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
         </form>
         <ul className="navbar-nav mt-3 data-elements">
           {dataSources.map((source) => (
-            <Collapse key={source.id} source={source} />
+            <Collapse key={source.id} source={source} setFieldName={setFieldName} fieldName={fieldName} />
           ))}
         </ul>
       </div>

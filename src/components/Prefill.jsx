@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
-import { GraphContext, NodeContext } from "../context/ContextProvider";
+import {
+  GraphContext,
+  NodeContext,
+  PrefillContext,
+} from "../context/ContextProvider";
 import { useNavigate } from "react-router";
 
 import PrefillSidebar from "./PrefillSidebar";
@@ -15,31 +19,23 @@ function Prefill() {
   const [fieldName, setFieldName] = useState("");
   const [fields, setFields] = useState([]);
   const [parentNodes, setParentNodes] = useState([]);
-  const [muted, setMuted] = useState("");
-  const [filled, setFilled] = useState(true);
 
-  const { id, componentId, name } = useContext(NodeContext);
+  const { nodeId, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
-
-
+  const { prefill, setPrefill } = useContext(PrefillContext);
 
   useEffect(() => {
-    if (!id) {
+    if (!nodeId) {
       navigate("/");
-    return;
-  }
+      return;
+    }
     // retrieve fields to display
     const form = graph?.forms.filter((f) => f.id === componentId)[0];
     setFields(Object.keys(form.field_schema.properties));
 
     // get parent nodes for sidebar
-    setParentNodes(getParentNodes(id));
+    setParentNodes(getParentNodes(nodeId));
   }, []);
-
-  useEffect(() => {
-    // variable to set text input class for text color
-    setMuted(filled ? "" : " text-muted");
-  }, [filled]);
 
   function handleClick(event) {
     const { target } = event;
@@ -68,6 +64,21 @@ function Prefill() {
     return allParents;
   }
 
+  function handleFieldClear(event) {
+    let { target } = event;
+    let { id } = target;
+
+    // only button has an id, so loop through parent elements until the button id is selected
+    while (!id) {
+      target = target.parentElement;
+      id = target.id;
+    }
+
+    const prefillCopy = { ...prefill };
+    prefillCopy[nodeId][id] = "";
+    setPrefill(prefillCopy);
+  }
+
   return (
     <>
       <div className="container">
@@ -75,8 +86,11 @@ function Prefill() {
         <p>Prefill fields for {name}.</p>
         <div>
           {fields.map((field) => (
-            <div key={field} className="input-group position-relative mb-2 mt-3">
-              {filled ? (
+            <div
+              key={field}
+              className="input-group position-relative mb-2 mt-3"
+            >
+              {prefill[nodeId][field] ? (
                 ""
               ) : (
                 <FontAwesomeIcon
@@ -91,19 +105,23 @@ function Prefill() {
               )}
               <input
                 type="text"
-                className={"form-control" + muted}
+                className={prefill[nodeId][field] ? "form-control" : "form-control text-muted"}
                 onClick={handleClick}
                 style={{
-                  paddingLeft: filled ? ".75rem" : "30px",
+                  marginLeft: prefill[nodeId][field] ? "14px" : "",
+                  paddingLeft: prefill[nodeId][field] ? ".75rem" : "30px",
                   backgroundColor: "rgb(233, 236, 239)",
-                  borderRadius: filled ? "15px 0px 0px 15px" : "6px",
+                  borderRadius: prefill[nodeId][field]
+                    ? "15px 0px 0px 15px"
+                    : "6px",
                 }}
-                value={field}
-                disabled={filled || fieldName}
+                value={prefill[nodeId][field] ? `${field}: ${prefill[nodeId][field]}` : field}
+                disabled={prefill[nodeId][field] || fieldName}
               />
-              {filled ? (
+              {prefill[nodeId][field] ? (
                 <button
                   type="button"
+                  id={field}
                   style={{
                     border: "1px solid rgb(222, 226, 230)",
                     borderLeftColor: "rgb(233, 236, 239)",
@@ -113,7 +131,7 @@ function Prefill() {
                     backgroundColor: "rgb(233, 236, 239)",
                     boxShadow: "0",
                   }}
-                  onClick={() => setFilled(false)}
+                  onClick={handleFieldClear}
                 >
                   <FontAwesomeIcon
                     icon={faCircleXmark}
