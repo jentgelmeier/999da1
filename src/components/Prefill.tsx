@@ -30,33 +30,33 @@ function Prefill() {
       return;
     }
     // retrieve fields to display
-    const form = graph?.forms.filter((f) => f.id === componentId)[0];
+    const form = graph?.forms?.filter((f) => f.id === componentId)[0];
     setFields(Object.keys(form?.field_schema.properties));
 
     // get parent nodes for sidebar
     setParentNodes(getParentNodes(nodeId));
   }, []);
 
-  function handleClick(event) {
+  function handleClick(event: React.MouseEvent<HTMLInputElement>) {
     const { target } = event;
 
-    target.select();
-    setFieldName(`${name}.${target.value}`);
+    (target as HTMLInputElement).select();
+    setFieldName(`${name}.${(target as HTMLInputElement).value}`);
   }
 
   function getParentNodes(formId: string): string[] {
     // use the spread operator here to create a copy; otherwise, I'd modify the graph...data.prerequisites object directly
     let currentParents = [
-      ...graph.nodes.filter((f) => f.id === formId)[0].data.prerequisites,
+      ...graph?.nodes?.filter((f) => f.id === formId)[0].data.prerequisites,
     ];
-    let allParents = [];
+    let allParents: string[] = [];
 
     while (currentParents.length) {
       let currentId = currentParents.shift();
       if (!allParents.includes(currentId)) {
         allParents.push(currentId);
       }
-      let nextParents = graph.nodes.filter((f) => f.id === currentId)[0].data
+      let nextParents = graph?.nodes?.filter((f) => f.id === currentId)[0].data
         .prerequisites;
       currentParents = currentParents.concat(nextParents);
     }
@@ -64,17 +64,18 @@ function Prefill() {
     return allParents;
   }
 
-  function handleFieldClear(event) {
-    let { target } = event;
-    let { id } = target;
+  function handleFieldClear(event: React.MouseEvent<HTMLButtonElement>) {
+    let { target }: { target: EventTarget | null } = event;
+    let { id } = target as HTMLElement;
 
     // only button has an id, so loop through parent elements until the button id is selected
     while (!id) {
-      target = target.parentElement;
-      id = target.id;
+      target = (target as HTMLElement).parentElement;
+      id = (target as HTMLElement).id;
     }
 
     const prefillCopy = { ...prefill };
+    // @ts-ignore
     prefillCopy[nodeId][id] = "";
     setPrefill(prefillCopy);
   }
@@ -90,6 +91,7 @@ function Prefill() {
               key={field}
               className="input-group position-relative mb-2 mt-3"
             >
+              {/* @ts-ignore */}
               {prefill[nodeId][field] ? (
                 ""
               ) : (
@@ -106,6 +108,7 @@ function Prefill() {
               <input
                 type="text"
                 className={
+                  // @ts-ignore
                   prefill[nodeId][field]
                     ? "form-control"
                     : "form-control text-muted"
@@ -113,20 +116,27 @@ function Prefill() {
                 onClick={handleClick}
                 onChange={() => {}} //added onChange to remove React console error
                 style={{
+                  // @ts-ignore
                   marginLeft: prefill[nodeId][field] ? "14px" : "",
+                  // @ts-ignore
                   paddingLeft: prefill[nodeId][field] ? ".75rem" : "30px",
                   backgroundColor: "rgb(233, 236, 239)",
+                  // @ts-ignore
                   borderRadius: prefill[nodeId][field]
                     ? "15px 0px 0px 15px"
                     : "6px",
                 }}
                 value={
+                  // @ts-ignore
                   prefill[nodeId][field]
-                    ? `${field}: ${prefill[nodeId][field]}`
+                    ? // @ts-ignore
+                      `${field}: ${prefill[nodeId][field]}`
                     : field
                 }
+                // @ts-ignore
                 disabled={prefill[nodeId][field] || fieldName}
               />
+              {/* @ts-ignore */}
               {prefill[nodeId][field] ? (
                 <button
                   type="button"

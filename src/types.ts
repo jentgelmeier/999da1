@@ -1,4 +1,4 @@
-type SetString = (arg0: string) => void;
+export type SetString = (arg0: string) => void;
 
 export interface NodeContextType {
   nodeId: string;
@@ -35,7 +35,7 @@ export interface Graph {
 export type setGraph = (graph: Graph) => void;
 
 export type GraphContextType = {
-  graph?: Graph;
+  graph?: Partial<Graph>;
   setGraph?: setGraph;
 };
 
@@ -62,5 +62,5 @@ export interface PrefillType {
 
 export type PrefillContextType = {
   prefill?: PrefillType;
-  setPrefill?: Function;
+  setPrefill: Function;
 };

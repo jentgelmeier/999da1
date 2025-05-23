@@ -16,8 +16,10 @@ export const NodeContext = createContext<NodeContextType>({
   name: "",
   setName: () => {},
 });
-export const GraphContext = createContext<GraphContextType >({});
-export const PrefillContext = createContext<PrefillContextType>({});
+export const GraphContext = createContext<GraphContextType>({});
+export const PrefillContext = createContext<PrefillContextType>({
+  setPrefill: () => {},
+});
 
 interface ContextProviderProps {
   children: any;

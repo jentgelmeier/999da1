@@ -1,8 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import Collapse from "./Collapse";
 import { GraphContext } from "../context/ContextProvider";
+import { SetString } from "../types";
 
-function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
+function PrefillSidebar({
+  fieldName = "",
+  setFieldName,
+  parentNodes = [],
+}: {
+  fieldName: string;
+  setFieldName: SetString;
+  parentNodes: string[];
+}) {
   const globalElements = ["email", "id", "name"];
 
   const { graph } = useContext(GraphContext);
