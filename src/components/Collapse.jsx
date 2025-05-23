@@ -1,14 +1,26 @@
 import { faAngleDown, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NodeContext, PrefillContext } from "../context/ContextProvider";
 
-function Collapse({ source = {}, fieldName, setFieldName }) {
+function Collapse({
+  source = {},
+  fieldName,
+  setFieldName,
+  displayedDataSources,
+}) {
   const { elements, id, title } = source;
-  const [down, setDown] = useState(false);
 
+  const [down, setDown] = useState();
   const { prefill, setPrefill } = useContext(PrefillContext);
   const { nodeId } = useContext(NodeContext);
+
+  useEffect(() => {
+    const collapseElement = document.getElementById("collapse-" + id);
+    if (collapseElement) {
+      setDown([...collapseElement.classList].includes("show"));
+    }
+  }, [displayedDataSources]);
 
   function handleClick(event) {
     const { innerText } = event.target;

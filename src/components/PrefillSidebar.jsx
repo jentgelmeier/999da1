@@ -3,10 +3,16 @@ import Collapse from "./Collapse";
 import { GraphContext } from "../context/ContextProvider";
 
 function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
+  const globalElements = ["email", "id", "name"];
+
   const { graph } = useContext(GraphContext);
+
+  const [search, setSearch] = useState("");
   const [show, setShow] = useState();
-  const [globalElements, setGlobalElement] = useState(["email", "id", "name"]);
-  const [dataSources, setDataSources] = useState([
+  // there are 2 data sources states: one to display, which gets filtered by the search input,
+  // and one that stays unchanged that can be used to reshow all data sources when the search input is cleared
+  const [displayedDataSources, setDisplayedDataSources] = useState([]);
+  const [fullDataSources, setFullDataSources] = useState([
     { title: "Action Properties", id: "actionProps", elements: globalElements },
     {
       title: "Client Organization Properties",
@@ -17,6 +23,7 @@ function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
 
   useEffect(() => {
     const parentSources = [];
+    // loop through parentNodes and format data to add to data sources
     for (let id of parentNodes) {
       let node = graph.nodes.filter((f) => f.id === id)[0];
       const { name, component_id } = node.data;
@@ -28,10 +35,17 @@ function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
       parentSources.push(source);
     }
     parentSources.sort(sortSources);
-    setDataSources(dataSources.concat(parentSources));
+
+    setFullDataSources(fullDataSources.concat(parentSources));
+    // use JSON.parse and JSON.stringify to create a deep copy;
+    // otherwise, fullDataSources will get change along with displayedDataSources
+    setDisplayedDataSources(
+      JSON.parse(JSON.stringify(fullDataSources.concat(parentSources)))
+    );
   }, [parentNodes]);
 
   useEffect(() => {
+    // show the sidebar based on whether there is a fieldName selected
     setShow(fieldName ? "show" : "");
   }, [fieldName]);
 
@@ -43,6 +57,30 @@ function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
       return 1;
     }
     return 0;
+  }
+
+  function handleSearchChange(event) {
+    const { value } = event.target;
+    setSearch(value);
+
+    if (value) {
+      // expand collapses
+      const collapses = document.getElementsByClassName("collapse");
+      for (let collapse of collapses) {
+        collapse.classList.add("show");
+      }
+      // filter datasources
+      const displayedCopy = [...displayedDataSources];
+      for (let source of displayedCopy) {
+        source.elements = source.elements.filter((el) =>
+          el.includes(value.toLowerCase().trim())
+        );
+      }
+      setDisplayedDataSources(displayedCopy);
+    } else {
+      //re-dispaly all data sources
+      setDisplayedDataSources(JSON.parse(JSON.stringify(fullDataSources)));
+    }
   }
 
   return (
@@ -71,11 +109,19 @@ function PrefillSidebar({ fieldName = "", setFieldName, parentNodes = [] }) {
             className="form-control me-2"
             type="search"
             placeholder="Search"
+            value={search}
+            onChange={handleSearchChange}
           />
         </form>
         <ul className="navbar-nav mt-3 data-elements">
-          {dataSources.map((source) => (
-            <Collapse key={source.id} source={source} setFieldName={setFieldName} fieldName={fieldName} />
+          {displayedDataSources.map((source) => (
+            <Collapse
+              key={source.id}
+              source={source}
+              setFieldName={setFieldName}
+              fieldName={fieldName}
+              displayedDataSources={displayedDataSources}
+            />
           ))}
         </ul>
       </div>
