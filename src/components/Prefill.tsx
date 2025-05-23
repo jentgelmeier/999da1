@@ -17,8 +17,8 @@ function Prefill() {
   const navigate = useNavigate();
 
   const [fieldName, setFieldName] = useState("");
-  const [fields, setFields] = useState([]);
-  const [parentNodes, setParentNodes] = useState([]);
+  const [fields, setFields] = useState<string[]>([]);
+  const [parentNodes, setParentNodes] = useState<string[]>([]);
 
   const { nodeId, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
@@ -31,7 +31,7 @@ function Prefill() {
     }
     // retrieve fields to display
     const form = graph?.forms.filter((f) => f.id === componentId)[0];
-    setFields(Object.keys(form.field_schema.properties));
+    setFields(Object.keys(form?.field_schema.properties));
 
     // get parent nodes for sidebar
     setParentNodes(getParentNodes(nodeId));
@@ -44,7 +44,7 @@ function Prefill() {
     setFieldName(`${name}.${target.value}`);
   }
 
-  function getParentNodes(formId) {
+  function getParentNodes(formId: string): string[] {
     // use the spread operator here to create a copy; otherwise, I'd modify the graph...data.prerequisites object directly
     let currentParents = [
       ...graph.nodes.filter((f) => f.id === formId)[0].data.prerequisites,

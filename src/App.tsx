@@ -1,21 +1,22 @@
-import "./App.css";
 import { useEffect, useState } from "react";
-
+import { BrowserRouter, Route, Routes } from "react-router";
 import NodeList from "./components/NodeList";
 import Prefill from "./components/Prefill";
-import { BrowserRouter, Route, Routes } from "react-router";
 import { ContextProvider } from "./context/ContextProvider";
+import { Graph } from "./types";
 
 function App() {
-  const [graph, setGraph] = useState({});
+  const [graph, setGraph] = useState <Partial<Graph>>({});
 
   function fetchGraph() {
+    const requestOptions = {
+      method: "GET",
+      "Content-Type": "application/json"
+    };
+
     return fetch(
       "http://localhost:3001/api/v1/123/actions/blueprints/bp_456/bpv_123/graph/",
-      {
-        method: "GET",
-        "Content-Type": "application/json",
-      }
+      requestOptions
     ).then((res) => res.json());
   }
 
