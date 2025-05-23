@@ -105,8 +105,13 @@ function Prefill() {
               )}
               <input
                 type="text"
-                className={prefill[nodeId][field] ? "form-control" : "form-control text-muted"}
+                className={
+                  prefill[nodeId][field]
+                    ? "form-control"
+                    : "form-control text-muted"
+                }
                 onClick={handleClick}
+                onChange={() => {}} //added onChange to remove React console error
                 style={{
                   marginLeft: prefill[nodeId][field] ? "14px" : "",
                   paddingLeft: prefill[nodeId][field] ? ".75rem" : "30px",
@@ -115,7 +120,11 @@ function Prefill() {
                     ? "15px 0px 0px 15px"
                     : "6px",
                 }}
-                defaultValue={prefill[nodeId][field] ? `${field}: ${prefill[nodeId][field]}` : field}
+                value={
+                  prefill[nodeId][field]
+                    ? `${field}: ${prefill[nodeId][field]}`
+                    : field
+                }
                 disabled={prefill[nodeId][field] || fieldName}
               />
               {prefill[nodeId][field] ? (
