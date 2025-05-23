@@ -115,7 +115,7 @@ function Prefill() {
                     ? "15px 0px 0px 15px"
                     : "6px",
                 }}
-                value={prefill[nodeId][field] ? `${field}: ${prefill[nodeId][field]}` : field}
+                defaultValue={prefill[nodeId][field] ? `${field}: ${prefill[nodeId][field]}` : field}
                 disabled={prefill[nodeId][field] || fieldName}
               />
               {prefill[nodeId][field] ? (
