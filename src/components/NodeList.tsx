@@ -30,7 +30,7 @@ function NodeList({ graph }: { graph: Partial<Graph> }) {
   }
 
   return (
-    <div className="container my-auto">
+    <div className="container center">
       {nodes.sort(azSort).map((node: Node) => {
         return (
           <div key={node.id} className="card my-1">
