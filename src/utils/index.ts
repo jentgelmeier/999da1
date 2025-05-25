@@ -19,5 +19,7 @@ export function fetchGraph() {
   return fetch(
     "http://localhost:3001/api/v1/123/actions/blueprints/bp_456/bpv_123/graph/",
     requestOptions
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch((err) => console.error(err));
 }

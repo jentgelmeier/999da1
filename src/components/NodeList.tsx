@@ -18,6 +18,13 @@ function NodeList() {
     });
   }, []);
 
+  if (!graph)
+    return (
+      <div className="alert alert-danger" role="alert">
+        There was an error loading the data.
+      </div>
+    );
+
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     setName((e.target as HTMLButtonElement).innerText);
     setNodeId((e.target as HTMLButtonElement).value);
