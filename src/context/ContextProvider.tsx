@@ -5,7 +5,6 @@ import {
   NodeContextType,
   PrefillContextType,
   PrefillType,
-  setGraph,
 } from "../types";
 
 export const NodeContext = createContext<NodeContextType>({
@@ -16,22 +15,15 @@ export const NodeContext = createContext<NodeContextType>({
   name: "",
   setName: () => {},
 });
-export const GraphContext = createContext<GraphContextType>({});
+export const GraphContext = createContext<GraphContextType>({
+  setGraph: () => {},
+});
 export const PrefillContext = createContext<PrefillContextType>({
   setPrefill: () => {},
 });
 
-interface ContextProviderProps {
-  children: any;
-  graph: Partial<Graph>;
-  setGraph: setGraph;
-}
-
-export function ContextProvider({
-  children,
-  graph,
-  setGraph,
-}: ContextProviderProps) {
+export function ContextProvider({ children, testGraph }: { children: any, testGraph?: Graph }) {
+  const [graph, setGraph] = useState<Partial<Graph>>(testGraph || {});
   const [nodeId, setNodeId] = useState<string>("");
   const [componentId, setComponentId] = useState<string>("");
   const [name, setName] = useState<string>("");

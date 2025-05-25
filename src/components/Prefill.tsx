@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDatabase, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+
+import PrefillSidebar from "./PrefillSidebar";
+
 import {
   GraphContext,
   NodeContext,
   PrefillContext,
 } from "../context/ContextProvider";
-import { useNavigate } from "react-router";
-
-import PrefillSidebar from "./PrefillSidebar";
-
-// font awesome icons
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 function Prefill() {
   const navigate = useNavigate();

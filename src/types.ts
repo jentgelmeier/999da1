@@ -36,7 +36,7 @@ export type setGraph = (graph: Graph) => void;
 
 export type GraphContextType = {
   graph?: Partial<Graph>;
-  setGraph?: setGraph;
+  setGraph: setGraph;
 };
 
 export interface PrefillType {

@@ -1,6 +1,8 @@
+import { useContext, useEffect, useState } from "react";
+
 import { faAngleDown, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useState } from "react";
+
 import { NodeContext, PrefillContext } from "../context/ContextProvider";
 import { DataSource, SetString } from "../types";
 

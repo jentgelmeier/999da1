@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
+
 import Collapse from "./Collapse";
+
 import { GraphContext } from "../context/ContextProvider";
 import { DataSource, SetString } from "../types";
 

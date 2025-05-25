@@ -1,24 +1,22 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { NodeContext } from "../context/ContextProvider";
-import { Graph, NodeContextType, Node } from "../types";
 
-function NodeList({ graph }: { graph: Partial<Graph> }) {
+import { GraphContext, NodeContext } from "../context/ContextProvider";
+
+import { NodeContextType, Node } from "../types";
+import { fetchGraph, nodeSort } from "../utils";
+
+function NodeList() {
   const navigate = useNavigate();
+  const { graph, setGraph } = useContext(GraphContext);
   const { setNodeId, setComponentId, setName } =
     useContext<NodeContextType>(NodeContext);
 
-  const { nodes = [] } = graph;
-
-  function azSort(a: Node, b: Node) {
-    if (a.data?.name < b.data?.name) {
-      return -1;
-    }
-    if (a.data?.name > b.data?.name) {
-      return 1;
-    }
-    return 0;
-  }
+  useEffect(() => {
+    fetchGraph().then((data) => {
+      setGraph(data);
+    });
+  }, []);
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     setName((e.target as HTMLButtonElement).innerText);
@@ -31,7 +29,7 @@ function NodeList({ graph }: { graph: Partial<Graph> }) {
 
   return (
     <div className="container center">
-      {nodes.sort(azSort).map((node: Node) => {
+      {graph?.nodes?.sort(nodeSort).map((node: Node) => {
         return (
           <div key={node.id} className="card my-1">
             <div className="card-body">
