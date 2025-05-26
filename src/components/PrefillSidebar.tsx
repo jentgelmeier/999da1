@@ -3,26 +3,30 @@ import { useContext, useEffect, useState } from "react";
 import Collapse from "./Collapse";
 
 import { GraphContext } from "../context/ContextProvider";
-import { DataSource, SetString } from "../types";
+import { DataSource, Node, SetString } from "../types";
 
 function PrefillSidebar({
   fieldName = "",
   setFieldName,
-  parentNodes = [],
+  nodeId,
 }: {
   fieldName: string;
   setFieldName: SetString;
-  parentNodes: string[];
+  nodeId: string;
 }) {
-  const globalElements = ["email", "id", "name"];
+  const globalElements: string[] = ["email", "id", "name"];
 
   const { graph } = useContext(GraphContext);
 
   const [search, setSearch] = useState<string>("");
   const [show, setShow] = useState<string>("");
+  const [parentNodes, setParentNodes] = useState<string[]>([]);
+
   // there are 2 data sources states: one to display, which gets filtered by the search input,
   // and one that stays unchanged that can be used to reshow all data sources when the search input is cleared
-  const [displayedDataSources, setDisplayedDataSources] = useState<DataSource[]>([]);
+  const [displayedDataSources, setDisplayedDataSources] = useState<
+    DataSource[]
+  >([]);
   const [fullDataSources, setFullDataSources] = useState<DataSource[]>([
     { title: "Action Properties", id: "actionProps", elements: globalElements },
     {
@@ -33,23 +37,29 @@ function PrefillSidebar({
   ]);
 
   useEffect(() => {
-    const parentSources = [];
+    setParentNodes(getParentNodes(nodeId));
+  }, []);
+
+  useEffect(() => {
+    const parentSources: DataSource[] = [];
     // loop through parentNodes and format data to add to data sources
     for (let id of parentNodes) {
-      let node = graph?.nodes?.filter((f) => f.id === id)[0];
+      let node: Node | undefined = graph?.nodes?.filter((f) => f.id === id)[0];
       const { name, component_id } = node?.data;
 
-      const form = graph?.forms?.filter((f) => f.id === component_id)[0];
-      const elements = Object.keys(form?.field_schema.properties);
+      const form: Node | undefined = graph?.forms?.filter(
+        (f) => f.id === component_id
+      )[0];
+      const elements: string[] = Object.keys(form?.field_schema.properties);
 
-      const source = { title: name, id, elements };
+      const source: DataSource = { title: name, id, elements };
       parentSources.push(source);
     }
     parentSources.sort(sortSources);
 
     setFullDataSources(fullDataSources.concat(parentSources));
     // use JSON.parse and JSON.stringify to create a deep copy;
-    // otherwise, fullDataSources will get change along with displayedDataSources
+    // otherwise, fullDataSources will get changed along with displayedDataSources
     setDisplayedDataSources(
       JSON.parse(JSON.stringify(fullDataSources.concat(parentSources)))
     );
@@ -59,6 +69,27 @@ function PrefillSidebar({
     // show the sidebar based on whether there is a fieldName selected
     setShow(fieldName ? "show" : "");
   }, [fieldName]);
+
+  function getParentNodes(formId: string): string[] {
+    // use the spread operator here to create a copy; otherwise, I'd modify the graph.nodes.data.prerequisites object directly
+    let currentParents: string[] = [
+      ...graph?.nodes?.filter((f) => f.id === formId)[0].data.prerequisites,
+    ];
+    let allParents: string[] = [];
+
+    while (currentParents.length) {
+      let currentId: string = currentParents.shift() as string;
+      if (!allParents.includes(currentId)) {
+        allParents.push(currentId);
+      }
+      let nextParents: string[] = graph?.nodes?.filter(
+        (f) => f.id === currentId
+      )[0].data.prerequisites;
+      currentParents = currentParents.concat(nextParents);
+    }
+
+    return allParents;
+  }
 
   function sortSources(a: DataSource, b: DataSource) {
     if (a.title < b.title) {

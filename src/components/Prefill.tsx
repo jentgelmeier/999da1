@@ -18,7 +18,6 @@ function Prefill() {
 
   const [fieldName, setFieldName] = useState("");
   const [fields, setFields] = useState<string[]>([]);
-  const [parentNodes, setParentNodes] = useState<string[]>([]);
 
   const { nodeId, componentId, name } = useContext(NodeContext);
   const { graph } = useContext(GraphContext);
@@ -32,9 +31,6 @@ function Prefill() {
     // retrieve fields to display
     const form = graph?.forms?.filter((f) => f.id === componentId)[0];
     setFields(Object.keys(form?.field_schema.properties));
-
-    // get parent nodes for sidebar
-    setParentNodes(getParentNodes(nodeId));
   }, []);
 
   function handleClick(event: React.MouseEvent<HTMLInputElement>) {
@@ -42,26 +38,6 @@ function Prefill() {
 
     (target as HTMLInputElement).select();
     setFieldName(`${name}.${(target as HTMLInputElement).value}`);
-  }
-
-  function getParentNodes(formId: string): string[] {
-    // use the spread operator here to create a copy; otherwise, I'd modify the graph...data.prerequisites object directly
-    let currentParents = [
-      ...graph?.nodes?.filter((f) => f.id === formId)[0].data.prerequisites,
-    ];
-    let allParents: string[] = [];
-
-    while (currentParents.length) {
-      let currentId = currentParents.shift();
-      if (!allParents.includes(currentId)) {
-        allParents.push(currentId);
-      }
-      let nextParents = graph?.nodes?.filter((f) => f.id === currentId)[0].data
-        .prerequisites;
-      currentParents = currentParents.concat(nextParents);
-    }
-
-    return allParents;
   }
 
   function handleFieldClear(event: React.MouseEvent<HTMLButtonElement>) {
@@ -170,7 +146,7 @@ function Prefill() {
       <PrefillSidebar
         fieldName={fieldName}
         setFieldName={setFieldName}
-        parentNodes={parentNodes}
+        nodeId={nodeId}
       />
     </>
   );

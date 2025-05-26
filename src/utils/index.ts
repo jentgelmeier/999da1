@@ -1,4 +1,4 @@
-import { Node } from "../types";
+import { Graph, Node } from "../types";
 
 export function nodeSort(a: Node, b: Node): number {
   if (a.data?.name < b.data?.name) {
@@ -10,7 +10,7 @@ export function nodeSort(a: Node, b: Node): number {
   return 0;
 }
 
-export function fetchGraph() {
+export function fetchGraph(): Promise<Graph> {
   const requestOptions = {
     method: "GET",
     "Content-Type": "application/json",
@@ -20,6 +20,6 @@ export function fetchGraph() {
     "http://localhost:3001/api/v1/123/actions/blueprints/bp_456/bpv_123/graph/",
     requestOptions
   )
-    .then((res) => res.json())
-    .catch((err) => console.error(err));
+    .then((res: Response) => res.json())
+    .catch((err: string) => console.error(err));
 }

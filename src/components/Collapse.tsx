@@ -4,7 +4,7 @@ import { faAngleDown, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { NodeContext, PrefillContext } from "../context/ContextProvider";
-import { DataSource, SetString } from "../types";
+import { DataSource, PrefillType, SetString } from "../types";
 
 interface CollapseProps {
   fieldName: string;
@@ -34,9 +34,9 @@ function Collapse({
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     const { value } = event.target as HTMLButtonElement;
-    const field = fieldName.split(".")[1];
+    const field: string = fieldName.split(".")[1];
 
-    const prefillCopy = { ...prefill };
+    const prefillCopy: Partial<PrefillType> = { ...prefill };
     // @ts-ignore
     prefillCopy[nodeId][field] = title + "." + value;
     setPrefill(prefillCopy);
