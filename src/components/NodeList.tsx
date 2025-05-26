@@ -26,7 +26,7 @@ function NodeList() {
     );
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    setName((e.target as HTMLButtonElement).innerText);
+    setName((e.target as HTMLButtonElement).id);
     setNodeId((e.target as HTMLButtonElement).value);
     setComponentId(
       (e.target as HTMLButtonElement).getAttribute("data-componentid") || ""
@@ -43,6 +43,7 @@ function NodeList() {
               <button
                 className="btn btn-link"
                 value={node.id}
+                id={node.data.name}
                 data-componentid={node.data.component_id}
                 onClick={handleClick}
               >

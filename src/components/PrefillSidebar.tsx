@@ -99,6 +99,7 @@ function PrefillSidebar({
       className={show + " offcanvas offcanvas-start"}
       tabIndex={-1}
       id="offcanvasNavbar"
+      data-testid="offcanvasNavbar"
       aria-labelledby="offcanvasNavbarLabel"
     >
       <div className="offcanvas-header">

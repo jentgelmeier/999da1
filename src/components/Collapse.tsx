@@ -33,12 +33,12 @@ function Collapse({
   }, [displayedDataSources]);
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    const { innerText } = event.target as HTMLButtonElement;
+    const { value } = event.target as HTMLButtonElement;
     const field = fieldName.split(".")[1];
 
     const prefillCopy = { ...prefill };
     // @ts-ignore
-    prefillCopy[nodeId][field] = title + "." + innerText;
+    prefillCopy[nodeId][field] = title + "." + value;
     setPrefill(prefillCopy);
     setFieldName("");
   }
@@ -54,13 +54,13 @@ function Collapse({
         aria-controls={"collapse-" + id}
         onClick={() => setDown((prev) => !prev)}
       >
-        <FontAwesomeIcon icon={down ? faAngleDown : faAngleRight} /> {title}
+        <FontAwesomeIcon data-testid={"icon-" + id} icon={down ? faAngleDown : faAngleRight} /> {title}
       </button>
-      <div className="collapse" id={"collapse-" + id}>
+      <div className="collapse" id={"collapse-" + id} >
         <ul style={{ listStyleType: "none" }}>
           {elements.map((el) => (
             <li key={el}>
-              <button className="btn" onClick={handleClick}>
+              <button className="btn" value={el} data-testid={id + "-" + el} onClick={handleClick}>
                 {el}
               </button>
             </li>

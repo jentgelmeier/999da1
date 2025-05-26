@@ -156,6 +156,7 @@ function Prefill() {
                     icon={faCircleXmark}
                     size="lg"
                     style={{ color: "var(--bs-gray-500)" }}
+                    data-testid={"x-" + field}
                   />
                 </button>
               ) : (
