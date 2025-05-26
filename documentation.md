@@ -9,6 +9,7 @@ To clone this repo and get it running locally, run the following code in your te
 ```
 git clone https://github.com/jentgelmeier/999da1.git
 cd 999da1
+npm i
 npm start
 ```
 
@@ -17,10 +18,12 @@ You'll need to use my version of the mock server because I included a regex fix 
 To clone my avantosfrontendchallengeserver, run the following code in your terminal:
 
 ```
-git clone https://github.com/mosaic-avantos/frontendchallengeserver.git
+git clone https://github.com/jentgelmeier/avantosfrontendchallengeserver.git
 cd avantosfrontendchallengeserver
 npm start
 ```
+
+To run the tests, run "npm test" from the 999da1 folder in the terminal.
 
 - Note: The state does not save locally, so if you refresh your browser, any fields you selected to prefill values for will be reset. In the future, I'd save the state in local storage or a backend database.
 
