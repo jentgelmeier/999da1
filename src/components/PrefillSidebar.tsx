@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import Collapse from "./Collapse";
 
@@ -15,6 +15,15 @@ function PrefillSidebar({
   nodeId: string;
 }) {
   const globalElements: string[] = ["email", "id", "name"];
+  const globalDataSources: DataSource[] = [
+    { title: "Action Properties", id: "actionProps", elements: globalElements },
+    {
+      title: "Client Organization Properties",
+      id: "clientProps",
+      elements: globalElements,
+    },
+  ];
+  const query = useMemo(() => new URLSearchParams(window.location.search), []);
 
   const { graph } = useContext(GraphContext);
 
@@ -27,42 +36,48 @@ function PrefillSidebar({
   const [displayedDataSources, setDisplayedDataSources] = useState<
     DataSource[]
   >([]);
-  const [fullDataSources, setFullDataSources] = useState<DataSource[]>([
-    { title: "Action Properties", id: "actionProps", elements: globalElements },
-    {
-      title: "Client Organization Properties",
-      id: "clientProps",
-      elements: globalElements,
-    },
-  ]);
+  const [fullDataSources, setFullDataSources] = useState<DataSource[]>(
+    query.get("parent")?.includes("global") || !query.get("parent")
+      ? globalDataSources
+      : []
+  );
 
   useEffect(() => {
-    setParentNodes(getParentNodes(nodeId));
-  }, []);
-
-  useEffect(() => {
-    const parentSources: DataSource[] = [];
-    // loop through parentNodes and format data to add to data sources
-    for (let id of parentNodes) {
-      let node: Node | undefined = graph?.nodes?.filter((f) => f.id === id)[0];
-      const { name, component_id } = node?.data;
-
-      const form: Node | undefined = graph?.forms?.filter(
-        (f) => f.id === component_id
-      )[0];
-      const elements: string[] = Object.keys(form?.field_schema.properties);
-
-      const source: DataSource = { title: name, id, elements };
-      parentSources.push(source);
+    if (query.get("parent") !== "global") {
+      setParentNodes(getParentNodes(query.get("parent")?.split(","), nodeId));
     }
-    parentSources.sort(sortSources);
+  }, [graph]);
 
-    setFullDataSources(fullDataSources.concat(parentSources));
-    // use JSON.parse and JSON.stringify to create a deep copy;
-    // otherwise, fullDataSources will get changed along with displayedDataSources
-    setDisplayedDataSources(
-      JSON.parse(JSON.stringify(fullDataSources.concat(parentSources)))
-    );
+  useEffect(() => {
+    if (
+      !fullDataSources.length ||
+      JSON.stringify(fullDataSources) === JSON.stringify(globalDataSources)
+    ) {
+      const parentSources: DataSource[] = [];
+      // loop through parentNodes and format data to add to data sources
+      for (let id of parentNodes) {
+        let node: Node | undefined = graph?.nodes?.filter(
+          (f) => f.id === id
+        )[0];
+        const { name, component_id } = node?.data;
+
+        const form: Node | undefined = graph?.forms?.filter(
+          (f) => f.id === component_id
+        )[0];
+        const elements: string[] = Object.keys(form?.field_schema.properties);
+
+        const source: DataSource = { title: name, id, elements };
+        parentSources.push(source);
+      }
+      parentSources.sort(sortSources);
+
+      setFullDataSources(fullDataSources.concat(parentSources));
+      // use JSON.parse and JSON.stringify to create a deep copy;
+      // otherwise, fullDataSources will get changed along with displayedDataSources
+      setDisplayedDataSources(
+        JSON.parse(JSON.stringify(fullDataSources.concat(parentSources)))
+      );
+    }
   }, [parentNodes]);
 
   useEffect(() => {
@@ -70,16 +85,33 @@ function PrefillSidebar({
     setShow(fieldName ? "show" : "");
   }, [fieldName]);
 
-  function getParentNodes(formId: string): string[] {
+  function getParentNodes(
+    flag: string[] | undefined,
+    formId: string
+  ): string[] {
     // use the spread operator here to create a copy; otherwise, I'd modify the graph.nodes.data.prerequisites object directly
     let currentParents: string[] = [
-      ...graph?.nodes?.filter((f) => f.id === formId)[0].data.prerequisites,
+      ...(graph?.nodes?.filter((f) => f.id === formId)[0]?.data
+        ?.prerequisites || []),
     ];
+
+    if (flag?.includes("direct") && !flag?.includes("transitive")) {
+      return currentParents;
+    }
+
+    let directParents: string[] = [];
+    if (!flag?.includes("direct") && flag?.includes("transitive")) {
+      directParents = [...currentParents];
+    }
+
     let allParents: string[] = [];
 
     while (currentParents.length) {
       let currentId: string = currentParents.shift() as string;
-      if (!allParents.includes(currentId)) {
+      if (
+        !allParents.includes(currentId) &&
+        !directParents.includes(currentId)
+      ) {
         allParents.push(currentId);
       }
       let nextParents: string[] = graph?.nodes?.filter(
@@ -120,7 +152,7 @@ function PrefillSidebar({
       }
       setDisplayedDataSources(displayedCopy);
     } else {
-      //re-dispaly all data sources
+      //re-display all data sources
       setDisplayedDataSources(JSON.parse(JSON.stringify(fullDataSources)));
     }
   }

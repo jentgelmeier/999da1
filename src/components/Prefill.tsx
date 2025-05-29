@@ -13,7 +13,9 @@ import {
   PrefillContext,
 } from "../context/ContextProvider";
 
-function Prefill() {
+import { Graph } from "../types";
+
+function Prefill({ testGraph }: { testGraph?: Graph }) {
   const navigate = useNavigate();
 
   const [fieldName, setFieldName] = useState("");
@@ -24,14 +26,14 @@ function Prefill() {
   const { prefill, setPrefill } = useContext(PrefillContext);
 
   useEffect(() => {
-    if (!nodeId) {
+    if (!nodeId && testGraph) {
       navigate("/");
       return;
     }
     // retrieve fields to display
     const form = graph?.forms?.filter((f) => f.id === componentId)[0];
-    setFields(Object.keys(form?.field_schema.properties));
-  }, []);
+    setFields(Object.keys(form?.field_schema?.properties || {}));
+  }, [graph]);
 
   function handleClick(event: React.MouseEvent<HTMLInputElement>) {
     const { target } = event;

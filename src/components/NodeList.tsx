@@ -1,22 +1,16 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router";
 
 import { GraphContext, NodeContext } from "../context/ContextProvider";
 
 import { NodeContextType, Node } from "../types";
-import { fetchGraph, nodeSort } from "../utils";
+import { nodeSort } from "../utils";
 
 function NodeList() {
   const navigate = useNavigate();
-  const { graph, setGraph } = useContext(GraphContext);
+  const { graph } = useContext(GraphContext);
   const { setNodeId, setComponentId, setName } =
     useContext<NodeContextType>(NodeContext);
-
-  useEffect(() => {
-    fetchGraph().then((data) => {
-      setGraph(data);
-    });
-  }, []);
 
   if (!graph)
     return (
